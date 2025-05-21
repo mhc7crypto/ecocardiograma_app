@@ -170,7 +170,7 @@ Válvula mitral sin alteraciones morfológicas.
 Válvula pulmonar: sin alteraciones morfológicas. Sin estenosis ni insuficiencia.
 Válvula tricúspide: sin alteraciones morfológicas. Sin estenosis ni insuficiencia.
 Cavidades derechas normales. Función sistólica ventrículo derecho conservada.
-Tabique interauricular de aspecto aneurismático sin evidencias de shunt mediante doppler color.
+Tabique interauricular intacto.
 Vena cava inferior de dimensiones normales y con colapso inspiratorio.
 Raíz aortica y Aorta ascendente de dimensiones conservadas.
 Ausencia de derrame pericárdico.
