@@ -24,7 +24,7 @@ with col3:
 st.header("📏 Mediciones Bidimensionales")
 
 # ----------------------------------------
-# Ventrículo Izquierdo (Cálculos corregidos)
+# Ventrículo Izquierdo
 # ----------------------------------------
 st.subheader("Ventrículo Izquierdo")
 vi_col1, vi_col2 = st.columns(2)
@@ -42,15 +42,14 @@ with vi_col2:
     vs = vfd - vfs if vfd > vfs else 0
     fevi = ((vfd - vfs) / vfd * 100) if vfd > 0 else 0
     
-    # Masa ventricular (Fórmula ASE/EACVI corregida)
+    # Masa ventricular (Fórmula ASE/EACVI)
     masa = 0.8 * (1.04 * ((dvid + sivd + ppvid)**3 - dvid**3)) + 0.6
-    masa_index = masa / sc if sc > 0 else 0
+    masa_index = (masa / sc) if sc > 0 else 0
     
-    # EPR corregido (PPVId*2 / DVId)
+    # EPR corregido
     epr = (ppvid * 2) / dvid if dvid > 0 else 0
     
-    # Resultados
-    st.metric("VS (ml)", f"{vs:.1f} (60-100ml)")
+    st.metric("VS (ml)", f"{vs:.1f}")
     st.metric("Masa index (g/m²)", f"{masa_index:.1f} (H:46-115 F:43-95)")
     st.metric("EPR", f"{epr:.2f} (<0.42)")
     st.metric("FEVI (%)", f"{fevi:.1f}% (H:>52% F:>54%)")
@@ -118,7 +117,7 @@ with aortica_col1:
     st.metric("Gradiente máximo (mmHg)", f"{g_max_ao:.1f}")
 
 # ----------------------------------------
-# Válvula Tricúspide (Corrección: sin duplicados)
+# Válvula Tricúspide
 # ----------------------------------------
 st.subheader("Válvula Tricúspide")
 tricuspide_col1, tricuspide_col2 = st.columns(2)
@@ -160,9 +159,9 @@ Dimensiones de Ventrículo Izquierdo:
 - DVId: {dvid:.1f} cm (H:4,2-5,8 F:3,8-5,2cm)
 - PPVId: {ppvid:.1f} cm (H:0,6-1,0 F:0,6-0,9cm)
 - DVIs: {dvis:.1f} cm (H:2,5-4,0 F:2,2-3,5cm)
-- VFD: {vfd:.1f} ml (H:62-150 F:46-106ml)
-- VFS: {vfs:.1f} ml (H:21-61 F:14-42ml)
-- VS: {vs:.1f} ml (60-100ml)
+- VFD: {vfd:.1f} ml
+- VFS: {vfs:.1f} ml
+- VS: {vs:.1f} ml
 - Masa index: {masa_index:.1f} g/m² (H:46-115 F:43-95g/m2)
 - EPR: {epr:.2f} (<0,42)
 - FEVI: {fevi:.1f}% (H:>52% F:>54%)
@@ -232,3 +231,9 @@ st.text_area("Informe completo:", informe, height=600)
 # ========================================
 st.divider()
 st.caption("Hospital Santa María - Servicio de Cardiología")
+
+# ========================================
+# EJECUCIÓN
+# ========================================
+if __name__ == "__main__":
+    st.write("Aplicación lista 🏥")
