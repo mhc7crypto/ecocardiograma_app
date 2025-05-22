@@ -1,4 +1,3 @@
-# informe_ecocardio.py
 import streamlit as st
 
 # Configuración de la página
