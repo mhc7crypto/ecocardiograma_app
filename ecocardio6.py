@@ -27,11 +27,26 @@ with vi_col1:
     dvid = st.number_input("DVId (cm)", min_value=1.0, value=5.1, step=0.1)
     ppvid = st.number_input("PPVId (cm)", min_value=0.1, value=1.0, step=0.1)
     dvis = st.number_input("DVIs (cm)", min_value=1.0, value=2.9, step=0.1)
+    vfd = st.number_input("VFD (ml)", min_value=0.0, value=100.0, step=1.0)
+    vfs = st.number_input("VFS (ml)", min_value=0.0, value=30.0, step=1.0)
+    
 with vi_col2:
-    vs = st.number_input("VS (ml)", min_value=0.0, value=80.0, step=1.0)
-    masa_index = st.number_input("Masa index (g/m²)", min_value=0.0, value=88.9, step=0.1)
-    epr = st.number_input("EPR", min_value=0.0, value=0.39, step=0.01)
-    fevi = st.number_input("FEVI (%)", min_value=0.0, value=66.7, step=0.1)
+    # Cálculos automáticos
+    vs = vfd - vfs if vfd > vfs else 0
+    fevi = ((vfd - vfs) / vfd * 100) if vfd > 0 else 0
+    
+    # Cálculo de masa ventricular
+    masa = 0.8 * (1.04 * ((sivd + dvid + ppvid)**3 - sivd**3)) + 0.6
+    masa_index = masa / sc if sc > 0 else 0
+    
+    # Cálculo EPR
+    epr = (ppvid * 2) / sivd if sivd > 0 else 0
+    
+    # Mostrar métricas
+    st.metric("VS (ml)", f"{vs:.1f} (60-100ml)")
+    st.metric("Masa index (g/m²)", f"{masa_index:.1f} (H:46-115 F:43-95)")
+    st.metric("EPR", f"{epr:.2f} (<0.42)")
+    st.metric("FEVI (%)", f"{fevi:.1f}% (H:>52% F:>54%)")
 
 # Aurícula Izquierda
 st.subheader("Aurícula Izquierda")
@@ -43,7 +58,7 @@ with ai_col2:
     vol_ai_prom = (vol_ai_4c + vol_ai_2c)/2
     vol_ai_index = vol_ai_prom / sc if sc > 0 else 0
     st.metric("Volumen AI promedio (ml)", f"{vol_ai_prom:.1f}")
-    st.metric("Volumen AI index (ml/m²)", f"{vol_ai_index:.1f}")
+    st.metric("Volumen AI index (ml/m²)", f"{vol_ai_index:.1f} (<34)")
 
 # Aorta
 st.subheader("Aorta")
@@ -53,7 +68,7 @@ with ao_col1:
     ao_ascend = st.number_input("Ao Ascend (mm)", min_value=0.0, value=30.0, step=0.1)
 with ao_col2:
     ao_index = raiz_ao / sc if sc > 0 else 0
-    st.metric("Ao index (mm/m²)", f"{ao_index:.1f}")
+    st.metric("Ao index (mm/m²)", f"{ao_index:.1f} (19±1)")
 
 # Ventrículo Derecho
 st.subheader("Ventrículo Derecho")
@@ -73,7 +88,7 @@ with mitral_col1:
 with mitral_col2:
     vel_e_prime = st.number_input("Vel e' lateral (cm/s)", min_value=0.0, value=7.0, step=0.1)
     e_e_prime = (vel_e/100) / (vel_e_prime/100) if vel_e_prime > 0 else 0
-    st.metric("Relación E/e'", f"{e_e_prime:.1f}")
+    st.metric("Relación E/e'", f"{e_e_prime:.1f} (<13)")
 
 # Válvula Aórtica
 st.subheader("Válvula Aórtica")
@@ -83,24 +98,21 @@ with aortica_col1:
     g_max_ao = 4 * (vmax_ao**2) if vmax_ao > 0 else 0
     st.metric("Gradiente máximo (mmHg)", f"{g_max_ao:.1f}")
 
-# Válvula Tricúspide
+# Válvula Tricúspide (Corregido para evitar duplicados)
 st.subheader("Válvula Tricúspide")
 tricuspide_col1, tricuspide_col2 = st.columns(2)
 with tricuspide_col1:
     no_jet_tricuspide = st.checkbox("No se detectó jet de insuficiencia tricuspídea")
+    vmax_tricuspide = 0.0
+    g_max_tricuspide = 0.0
+    pr_ad = 0.0
+    psvd = 0.0
+    
     if not no_jet_tricuspide:
         vmax_tricuspide = st.number_input("V max (m/s)", min_value=0.0, value=0.0, step=0.1)
         g_max_tricuspide = 4 * (vmax_tricuspide**2) if vmax_tricuspide > 0 else 0
-    else:
-        vmax_tricuspide = 0
-        g_max_tricuspide = 0
-with tricuspide_col2:
-    if not no_jet_tricuspide:
         pr_ad = st.number_input("Pr AD (mmHg)", min_value=0.0, value=0.0, step=0.1)
         psvd = g_max_tricuspide + pr_ad if g_max_tricuspide > 0 else 0
-    else:
-        pr_ad = 0
-        psvd = 0
 
 # Válvula Pulmonar
 st.subheader("Válvula Pulmonar")
@@ -123,6 +135,8 @@ Dimensiones de Ventrículo Izquierdo:
 - DVId: {dvid:.1f} cm (H:4,2-5,8 F:3,8-5,2cm)
 - PPVId: {ppvid:.1f} cm (H:0,6-1,0 F:0,6-0,9cm)
 - DVIs: {dvis:.1f} cm (H:2,5-4,0 F:2,2-3,5cm)
+- VFD: {vfd:.1f} ml (H:62-150 F:46-106ml)
+- VFS: {vfs:.1f} ml (H:21-61 F:14-42ml)
 - VS: {vs:.1f} ml (60-100ml)
 - Masa index: {masa_index:.1f} g/m² (H:46-115 F:43-95g/m2)
 - EPR: {epr:.2f} (<0,42)
@@ -157,10 +171,10 @@ Válvula Aórtica:
 
 Válvula Tricúspide:
 {"- No se detectó jet de insuficiencia tricuspídea\n" if no_jet_tricuspide else ""}\
-{mostrar_si(vmax_tricuspide, "V max", f"{vmax_tricuspide:.1f} m/s")}\
-{mostrar_si(g_max_tricuspide, "Gradiente máximo", f"{g_max_tricuspide:.1f} mmHg")}\
-{mostrar_si(pr_ad, "Pr AD", f"{pr_ad:.1f} mmHg (0-5mmHg)")}\
-{mostrar_si(psvd, "PSVD", f"{psvd:.1f} mmHg (<35mmHg)")}
+{mostrar_si(vmax_tricuspide, "V max", "m/s")}\
+{mostrar_si(g_max_tricuspide, "Gradiente máximo", "mmHg")}\
+{mostrar_si(pr_ad, "Pr AD", "mmHg (0-5mmHg)")}\
+{mostrar_si(psvd, "PSVD", "mmHg (<35mmHg)")}
 
 Válvula Pulmonar:
 - V max: {vmax_pulmonar:.1f} m/s
