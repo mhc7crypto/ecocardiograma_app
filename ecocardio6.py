@@ -27,25 +27,11 @@ with vi_col1:
     dvid = st.number_input("DVId (cm)", min_value=1.0, value=5.1, step=0.1)
     ppvid = st.number_input("PPVId (cm)", min_value=0.1, value=1.0, step=0.1)
     dvis = st.number_input("DVIs (cm)", min_value=1.0, value=2.9, step=0.1)
-    vfd = st.number_input("VFD (ml)", min_value=0.0, value=120.0, step=1.0)  # Agregado para cálculo de FE
-    vfs = st.number_input("VFS (ml)", min_value=0.0, value=40.0, step=1.0)    # Agregado para cálculo de FE
 with vi_col2:
-    # Cálculo de Fracción de Eyección (FEVI)
-    fevi = ((vfd - vfs) / vfd * 100) if vfd > 0 else 0
-    
-    # Cálculo de Masa VI (g)
-    masa_vi = 0.8 * (1.04 * ((dvid + ppvid + sivd)**3 - dvid**3)) + 0.6
-    
-    # Cálculo de Masa Indexada (g/m²)
-    masa_index = masa_vi / sc if sc > 0 else 0
-    
-    # Cálculo de EPR
-    epr = (ppvid * 2) / dvid if dvid > 0 else 0
-    
-    st.metric("FEVI (%)", f"{fevi:.1f}% (H:>52% F:>54%)")
-    st.metric("Masa VI (g)", f"{masa_vi:.1f} (H:88-224 F:67-162g)")
-    st.metric("Masa index (g/m²)", f"{masa_index:.1f} (H:46-115 F:43-95g/m2)")
-    st.metric("EPR", f"{epr:.2f} (<0,42)")
+    vs = st.number_input("VS (ml)", min_value=0.0, value=80.0, step=1.0)
+    masa_index = st.number_input("Masa index (g/m²)", min_value=0.0, value=88.9, step=0.1)
+    epr = st.number_input("EPR", min_value=0.0, value=0.39, step=0.01)
+    fevi = st.number_input("FEVI (%)", min_value=0.0, value=66.7, step=0.1)
 
 # Aurícula Izquierda
 st.subheader("Aurícula Izquierda")
@@ -137,12 +123,10 @@ Dimensiones de Ventrículo Izquierdo:
 - DVId: {dvid:.1f} cm (H:4,2-5,8 F:3,8-5,2cm)
 - PPVId: {ppvid:.1f} cm (H:0,6-1,0 F:0,6-0,9cm)
 - DVIs: {dvis:.1f} cm (H:2,5-4,0 F:2,2-3,5cm)
-- VFD: {vfd:.1f} ml (H:62-150 F:46-106ml)
-- VFS: {vfs:.1f} ml (H:21-61 F:14-42ml)
-- FEVI: {fevi:.1f}% (H:>52% F:>54%)
-- Masa VI: {masa_vi:.1f} g (H:88-224 F:67-162g)
+- VS: {vs:.1f} ml (60-100ml)
 - Masa index: {masa_index:.1f} g/m² (H:46-115 F:43-95g/m2)
 - EPR: {epr:.2f} (<0,42)
+- FEVI: {fevi:.1f}% (H:>52% F:>54%)
 
 Dimensiones de Aurícula Izquierda:
 - Vol AI 4c: {vol_ai_4c:.1f} ml
