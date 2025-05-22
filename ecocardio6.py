@@ -210,3 +210,4 @@ if st.button("📋 Copiar al Portapapeles"):
 # --- FOOTER ---
 st.divider()
 st.caption("Hospital Santa María - Servicio de Cardiología")
+   
